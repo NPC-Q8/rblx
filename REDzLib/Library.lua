@@ -8,7 +8,7 @@ local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 local PlayerMouse = Player:GetMouse()
 
-local Library = {
+local redzlib = {
   Themes = {
     Darker = {
       ["Color Hub 1"] = ColorSequence.new({
@@ -51,7 +51,7 @@ local Library = {
     Version = "1.0.0"
   },
   Save = {
-    UISize = {400, 350},
+    UISize = {450, 250},
     TabSize = 160,
     Theme = "Dark"
   },
@@ -68,7 +68,7 @@ local UIScale = ViewportSize.Y / 450
 
 local SetProps, SetChildren, InsertTheme, Create do
   InsertTheme = function(Instance, Type)
-    table.insert(Library.Instances, {
+    table.insert(redzlib.Instances, {
       Instance = Instance,
       Type = Type
     })
@@ -117,18 +117,18 @@ local SetProps, SetChildren, InsertTheme, Create do
       local decode = HttpService:JSONDecode(readfile(file))
       
       if type(decode) == "table" then
-        if rawget(decode, "UISize") then Library.Save["UISize"] = decode["UISize"] end
-        if rawget(decode, "TabSize") then Library.Save["TabSize"] = decode["TabSize"] end
-        if rawget(decode, "Theme") and VerifyTheme(decode["Theme"]) then Library.Save["Theme"] = decode["Theme"] end
+        if rawget(decode, "UISize") then redzlib.Save["UISize"] = decode["UISize"] end
+        if rawget(decode, "TabSize") then redzlib.Save["TabSize"] = decode["TabSize"] end
+        if rawget(decode, "Theme") and VerifyTheme(decode["Theme"]) then redzlib.Save["Theme"] = decode["Theme"] end
       end
     end
   end
   
-  pcall(Save, "Library.lua")
+  pcall(Save, "redzlibrarynano.lua")
 end
 
 local ScreenGui = Create("ScreenGui", CoreGui, {
-  Name = "Library",
+  Name = "redzlibrarynano",
 }, {
   Create("UIScale", {
     Scale = UIScale,
@@ -212,7 +212,7 @@ local function MakeDrag(Instance)
 end
 
 local function VerifyTheme(Theme)
-  for name,_ in pairs(Library.Themes) do
+  for name,_ in pairs(redzlib.Themes) do
     if name == Theme then
       return true
     end
@@ -226,14 +226,14 @@ local function SaveJson(FileName, save)
   end
 end
 
-local Theme = Library.Themes[Library.Save.Theme]
+local Theme = redzlib.Themes[redzlib.Save.Theme]
 
 local function AddEle(Name, Func)
-  Library.Elements[Name] = Func
+  redzlib.Elements[Name] = Func
 end
 
 local function Make(Ele, Instance, props, ...)
-  local Element = Library.Elements[Ele](Instance, props, ...)
+  local Element = redzlib.Elements[Ele](Instance, props, ...)
   return Element
 end
 
@@ -380,17 +380,17 @@ local function GetColor(Instance)
 end
 
 -- /////////// --
-function Library:GetIcon(IconName)
+function redzlib:GetIcon(IconName)
   if IconName:find("rbxassetid://") or IconName:len() < 1 then return IconName end
   IconName = IconName:lower():gsub("lucide", ""):gsub("-", "")
   
-  for Name, Icon in pairs(Library.Icons) do
+  for Name, Icon in pairs(redzlib.Icons) do
     Name = Name:gsub("lucide", ""):gsub("-", "")
     if Name == IconName then
       return Icon
     end
   end
-  for Name, Icon in pairs(Library.Icons) do
+  for Name, Icon in pairs(redzlib.Icons) do
     Name = Name:gsub("lucide", ""):gsub("-", "")
     if Name:find(IconName) then
       return Icon
@@ -399,14 +399,14 @@ function Library:GetIcon(IconName)
   return IconName
 end
 
-function Library:SetTheme(NewTheme)
+function redzlib:SetTheme(NewTheme)
   if not VerifyTheme(NewTheme) then return end
   
-  Library.Save.Theme = NewTheme
-  SaveJson("Library.lua", Library.Save)
-  Theme = Library.Themes[NewTheme]
+  redzlib.Save.Theme = NewTheme
+  SaveJson("redzlibrarynano.lua", redzlib.Save)
+  Theme = redzlib.Themes[NewTheme]
   
-  table.foreach(Library.Instances, function(_,Val)
+  table.foreach(redzlib.Instances, function(_,Val)
     if Val.Type == "Gradient" then
       Val.Instance.Color = Theme["Color Hub 1"]
     elseif Val.Type == "Frame" then
@@ -425,16 +425,16 @@ function Library:SetTheme(NewTheme)
   end)
 end
 
-function Library:SetScale(NewScale)
+function redzlib:SetScale(NewScale)
   NewScale = ViewportSize.Y / math.clamp(NewScale, 300, 2000)
   UIScale, ScreenGui.Scale.Scale = NewScale, NewScale
 end
 
-function Library:MakeWindow(Configs)
-  local WTitle = Configs[1] or Configs.Name or Configs.Title or "Library"
-  local WMiniText = Configs[2] or Configs.SubTitle or "Ntrx Team"
+function redzlib:MakeWindow(Configs)
+  local WTitle = Configs[1] or Configs.Name or Configs.Title or "redz Library Nano"
+  local WMiniText = Configs[2] or Configs.SubTitle or "by NPC-Q8"
   local SaveCfg = Configs[3] or Configs.SaveFolder or false
-  local Flags = Library.Flags
+  local Flags = redzlib.Flags
   
   if type(SaveCfg) == "string" then SaveCfg = string.gsub(SaveCfg, "/", "|")end
   
@@ -469,7 +469,7 @@ function Library:MakeWindow(Configs)
     end
   end;LoadFile()
   
-  local UISizeX, UISizeY = unpack(Library.Save.UISize)
+  local UISizeX, UISizeY = unpack(redzlib.Save.UISize)
   local MainFrame = InsertTheme(Create("ImageButton", ScreenGui, {
     Size = UDim2.fromOffset(UISizeX, UISizeY),
     Position = UDim2.new(0.5, -UISizeX/2, 0.5, -UISizeY/2),
@@ -525,7 +525,7 @@ function Library:MakeWindow(Configs)
   }), "Text")
   
   local MainScroll = InsertTheme(Create("ScrollingFrame", Components, {
-    Size = UDim2.new(0, Library.Save.TabSize, 1, -TopBar.Size.Y.Offset),
+    Size = UDim2.new(0, redzlib.Save.TabSize, 1, -TopBar.Size.Y.Offset),
     ScrollBarImageColor3 = Theme["Color Theme"],
     Position = UDim2.new(0, 0, 1, 0),
     AnchorPoint = Vector2.new(0, 1),
@@ -558,7 +558,7 @@ function Library:MakeWindow(Configs)
   })
   
   local ControlSize1, ControlSize2 = MakeDrag(Create("ImageButton", MainFrame, {
-    Size = UDim2.new(0, 35, 0, 35),
+    Size = UDim2.new(0, 50, 0, 50),
     Position = MainFrame.Size,
     Active = true,
     AnchorPoint = Vector2.new(0.8, 0.8),
@@ -588,14 +588,14 @@ function Library:MakeWindow(Configs)
   
   ConnectSave(ControlSize1, function()
     if not Minimized then
-      Library.Save.UISize = {MainFrame.Size.X.Offset, MainFrame.Size.Y.Offset}
-      SaveJson("Library.lua", Library.Save)
+      redzlib.Save.UISize = {MainFrame.Size.X.Offset, MainFrame.Size.Y.Offset}
+      SaveJson("redzlibrarynano.lua", redzlib.Save)
     end
   end)
   
   ConnectSave(ControlSize2, function()
-    Library.Save.TabSize = MainScroll.Size.X.Offset
-    SaveJson("Library.lua", Library.Save)
+    redzlib.Save.TabSize = MainScroll.Size.X.Offset
+    SaveJson("redzlibrarynano.lua", redzlib.Save)
   end)
   
   local ButtonsFolder = Create("Folder", TopBar, {
@@ -663,7 +663,7 @@ function Library:MakeWindow(Configs)
   end
   function Window:AddMinimizeButton(Configs)
     local Button = MakeDrag(Create("ImageButton", ScreenGui, {
-      Size = UDim2.fromOffset(50, 50),
+      Size = UDim2.fromOffset(35, 35),
       Position = UDim2.fromScale(0.15, 0.15),
       BackgroundTransparency = 1,
       BackgroundColor3 = Theme["Color Hub 2"],
@@ -803,9 +803,9 @@ function Library:MakeWindow(Configs)
   end
   function Window:SelectTab(TabSelect)
     if type(TabSelect) == "number" then
-      Library.Tabs[TabSelect].func:Enable()
+      redzlib.Tabs[TabSelect].func:Enable()
     else
-      for _,Tab in pairs(Library.Tabs) do
+      for _,Tab in pairs(redzlib.Tabs) do
         if Tab.Cont == TabSelect.Cont then
           Tab.func:Enable()
         end
@@ -819,7 +819,7 @@ function Library:MakeWindow(Configs)
     local TName = Configs[1] or Configs.Title or "Tab!"
     local TIcon = Configs[2] or Configs.Icon or ""
     
-    TIcon = Library:GetIcon(TIcon)
+    TIcon = redzlib:GetIcon(TIcon)
     if not TIcon:find("rbxassetid://") or TIcon:gsub("rbxassetid://", ""):len() < 6 then
       TIcon = false
     end
@@ -895,7 +895,7 @@ function Library:MakeWindow(Configs)
       end
       Container.Parent = Containers
       Container.Size = UDim2.new(1, 0, 1, 150)
-      table.foreach(Library.Tabs, function(_,Tab)
+      table.foreach(redzlib.Tabs, function(_,Tab)
         if Tab.Cont ~= Container then
           Tab.func:Disable()
         end
@@ -910,7 +910,7 @@ function Library:MakeWindow(Configs)
     
     FirstTab = true
     local Tab = {}
-    table.insert(Library.Tabs, {TabInfo = {Name = TName, Icon = TIcon}, func = Tab, Cont = Container})
+    table.insert(redzlib.Tabs, {TabInfo = {Name = TName, Icon = TIcon}, func = Tab, Cont = Container})
     Tab.Cont = Container
     
     function Tab:Disable()
@@ -955,7 +955,7 @@ function Library:MakeWindow(Configs)
       }), "Text")
       
       local Section = {}
-      table.insert(Library.Options, {type = "Section", Name = SectionName, func = Section})
+      table.insert(redzlib.Options, {type = "Section", Name = SectionName, func = Section})
       function Section:Visible(Bool)
         if Bool == nil then SectionFrame.Visible = not SectionFrame.Visible return end
         SectionFrame.Visible = Bool
@@ -1025,7 +1025,7 @@ function Library:MakeWindow(Configs)
       end)
       
       local Button = {}
-      table.insert(Library.Options, {type = "Button", Name = BName, func = Button})
+      table.insert(redzlib.Options, {type = "Button", Name = BName, func = Button})
       function Button:Callback(func)
         table.insert(MultCallback, func)
       end
@@ -1114,7 +1114,7 @@ function Library:MakeWindow(Configs)
       end)
       
       local Toggle = {}
-      table.insert(Library.Options, {type = "Toggle", Name = TName, func = Toggle})
+      table.insert(redzlib.Options, {type = "Toggle", Name = TName, func = Toggle})
       function Toggle:Callback(func)
         table.insert(MultCallback, func)
         task.spawn(func, Default)
@@ -1397,7 +1397,7 @@ function Library:MakeWindow(Configs)
       CalculateSize()
       
       local Dropdown = {}
-      table.insert(Library.Options, {type = "Dropdown", Name = DName, func = Dropdown})
+      table.insert(redzlib.Options, {type = "Dropdown", Name = DName, func = Dropdown})
       function Dropdown:Visible(Bool)
         if Bool == nil then Button.Visible = not Button.Visible return end
         Button.Visible = Bool
@@ -1581,7 +1581,7 @@ function Library:MakeWindow(Configs)
 			end;SetSlider(Default)
 			
 			local Slider = {}
-			table.insert(Library.Options, {type = "Slider", Name = SName, func = Slider})
+			table.insert(redzlib.Options, {type = "Slider", Name = SName, func = Slider})
       function Slider:Set(NewVal1, NewVal2)
         if NewVal1 and NewVal2 then
           LabelFunc:SetTitle(NewVal1)
@@ -1612,7 +1612,7 @@ function Library:MakeWindow(Configs)
       local TDefault = Configs[2] or Configs.Default or ""
       local TPlaceholderText = Configs.PlaceholderText or "Input"
       local TClearText = Configs[3] or Configs.ClearText or false
-      local Callback = Configs[2] or Configs.Callback or function()end
+      local Callback = Configs[4] or Configs.Callback or function()end
       local MultCallback = {}
       
       if type(TDefault) ~= "string" or TDefault:gsub(" ", ""):len() < 1 then
@@ -1787,4 +1787,4 @@ function Library:MakeWindow(Configs)
   return Window
 end
 
-return Library
+return redzlib
